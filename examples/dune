@@ -2,7 +2,3 @@
  (names app_optimizer app_core_fp)
  (libraries core_fp runtime_meta))
 
-(executable
- (name app_logger)
- (libraries runtime_meta)
- (preprocess (pps ppx_log)))
