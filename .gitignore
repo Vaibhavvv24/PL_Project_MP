@@ -1,0 +1,32 @@
+# OCaml/Dune build directory
+_build/
+
+# IDE and Editor files
+.merlin
+*.swp
+*~
+*.swo
+.vscode/
+.idea/
+.DS_Store
+
+# OCaml compilation artifacts (just in case they are generated outside _build)
+*.cmo
+*.cmi
+*.cma
+*.cmx
+*.cmat
+*.cmxa
+*.cmxs
+*.o
+*.a
+*.so
+*.obj
+*.dll
+
+# Native and bytecode executables
+*.exe
+*.byte
+
+# Install files
+*.install
