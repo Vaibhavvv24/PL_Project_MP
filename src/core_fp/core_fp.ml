@@ -1,6 +1,6 @@
-(** ============================================================
+(** 
     Core Functional Programming Module
-    ============================================================
+    
     Demonstrates the foundational building blocks of functional
     programming in OCaml:
       - First-class functions
@@ -9,12 +9,11 @@
       - Function composition
       - Dynamic function generation
       - Pipeline construction
-    ============================================================ *)
-
-(* ----------------------------------------------------------
+    *)
+(* 
    1. FIRST-CLASS FUNCTIONS
    Functions are values — they can be stored, passed, and returned.
-   ---------------------------------------------------------- *)
+   *) 
 
 (** Apply any function [f] to a value [x]. *)
 let apply (f : 'a -> 'b) (x : 'a) : 'b = f x
@@ -22,10 +21,10 @@ let apply (f : 'a -> 'b) (x : 'a) : 'b = f x
 (** Apply a function twice to a value. *)
 let apply_twice (f : 'a -> 'a) (x : 'a) : 'a = f (f x)
 
-(* ----------------------------------------------------------
+(*
    2. CLOSURES
    Functions that capture variables from their enclosing scope.
-   ---------------------------------------------------------- *)
+   *)
 
 (** Returns a function that adds [n] to its argument. *)
 let make_adder (n : int) : int -> int = fun x -> x + n
@@ -47,10 +46,9 @@ let make_accumulator (init : int) : int -> int =
     total := !total + n;
     !total
 
-(* ----------------------------------------------------------
-   3. FUNCTION COMPOSITION
+(*3. FUNCTION COMPOSITION
    Build larger functions by chaining smaller ones.
-   ---------------------------------------------------------- *)
+   *)
 
 (** Standard mathematical composition: (compose f g) x = f(g(x)) *)
 let compose (f : 'b -> 'c) (g : 'a -> 'b) : 'a -> 'c = fun x -> f (g x)
@@ -62,10 +60,9 @@ let pipe_compose (g : 'a -> 'b) (f : 'b -> 'c) : 'a -> 'c = fun x -> f (g x)
 let compose_pipeline (fns : ('a -> 'a) list) : 'a -> 'a =
   List.fold_left pipe_compose (fun x -> x) fns
 
-(* ----------------------------------------------------------
-   4. HIGHER-ORDER FUNCTIONS
+(* 4. HIGHER-ORDER FUNCTIONS
    Functions that operate on other functions or collections.
-   ---------------------------------------------------------- *)
+   *)
 
 (** Map: apply [f] to every element of a list. *)
 let rec map (f : 'a -> 'b) : 'a list -> 'b list = function
@@ -98,10 +95,9 @@ let rec zip (xs : 'a list) (ys : 'b list) : ('a * 'b) list =
 let flat_map (f : 'a -> 'b list) (lst : 'a list) : 'b list =
   fold_right (fun x acc -> f x @ acc) lst []
 
-(* ----------------------------------------------------------
-   5. DYNAMIC FUNCTION GENERATION
+(* 5. DYNAMIC FUNCTION GENERATION
    Create specialized functions programmatically at runtime.
-   ---------------------------------------------------------- *)
+   *)
 
 (** Generates a power function: [dynamic_power n] returns x -> x^n *)
 let dynamic_power (n : int) : int -> int =
@@ -123,10 +119,9 @@ let make_threshold (t : int) : int -> [`Above | `Below | `Equal] =
     else if x < t then `Below
     else `Equal
 
-(* ----------------------------------------------------------
-   6. PIPELINE BUILDING
+(* 6. PIPELINE BUILDING
    Show dynamic, composable transformation pipelines.
-   ---------------------------------------------------------- *)
+   *)
 
 (** A pre-built numeric pipeline: add 2, then multiply by 3. *)
 let numeric_pipeline : int -> int =

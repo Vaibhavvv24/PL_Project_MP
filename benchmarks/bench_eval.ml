@@ -1,16 +1,16 @@
-(** ============================================================
+(**
     Benchmark 1: Optimizer Performance Evaluation
-    ============================================================
+  
     Measures execution time of:
       - Naive (unoptimized) evaluation of a deeply nested AST
       - Optimized evaluation after constant folding
     Reports speedup factor and qualitative analysis.
-    ============================================================ *)
+    *)
 
 open Runtime_meta.Dsl
 open Runtime_meta.Optimizer
 
-(* ── Timing utility ──────────────────────────────────────── *)
+(*Timing utility *)
 let time_it (f : unit -> 'a) : float * 'a =
   let t0  = Unix.gettimeofday () in
   let res = f () in
@@ -31,7 +31,7 @@ let rec make_balanced (n : int) : expr =
 
 let _use_balanced = make_balanced  (* suppress unused warning *)
 
-(* ── Print formatting helpers ────────────────────────────── *)
+(* Print formatting helpers *)
 let bar label pct =
   let width  = 40 in
   let filled = int_of_float (pct *. float_of_int width) in
@@ -49,9 +49,7 @@ let () =
   print_endline "╚══════════════════════════════════════════════════════╝";
   print_endline "";
 
-  (*─────────────────────────────────────────────────────────
-    TEST 1: Linear chain AST
-   ─────────────────────────────────────────────────────────*)
+  (*TEST 1: Linear chain AST*)
   let chain_size  = 5000 in
   let iterations  = 2000 in
 
@@ -80,9 +78,7 @@ let () =
   bar "Unoptimized" (t_raw /. max_t);
   bar "Optimized"   (t_opt /. max_t);
 
-  (*─────────────────────────────────────────────────────────
-    TEST 2: Algebraic simplification
-   ─────────────────────────────────────────────────────────*)
+  (*TEST 2: Algebraic simplification*)
   print_endline "";
   print_endline (String.make 56 '-');
   Printf.printf "▶ Test 2: Algebraic simplification benchmark\n\n";
@@ -112,9 +108,7 @@ let () =
   let speedup2 = if t_opt2 > 0.0 then t_raw2 /. t_opt2 else 999.0 in
   Printf.printf "  Speedup:    %.1fx\n" speedup2;
 
-  (*─────────────────────────────────────────────────────────
-    SUMMARY
-   ─────────────────────────────────────────────────────────*)
+  (*SUMMARY*)
   print_endline "";
   print_endline (String.make 56 '=');
   print_endline "  BENCHMARK SUMMARY";

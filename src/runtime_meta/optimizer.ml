@@ -1,6 +1,5 @@
-(** ============================================================
+(**
     Runtime Meta-Programming: Expression Optimizer
-    ============================================================
     Implements a multi-pass expression optimizer that treats
     OCaml programs-as-data (the DSL AST) and applies
     transformation rules to produce simpler, faster programs.
@@ -13,16 +12,13 @@
       1. Constant Folding    — pre-compute constant sub-trees
       2. Algebraic Simplify  — identity/zero laws
       3. Strength Reduction  — replace expensive ops with cheap ones
-      4. Dead Code Elim      — remove unused Let bindings
-    ============================================================ *)
+      4. Dead Code Elim      — remove unused Let bindings *)
 
 open Dsl
 
-(* ----------------------------------------------------------
-   1. CONSTANT FOLDING
+(* 1. CONSTANT FOLDING
    Pre-compute any sub-expression whose operands are both constants.
-   e.g.  Add(Const 3, Const 4)  →  Const 7
-   ---------------------------------------------------------- *)
+   e.g.  Add(Const 3, Const 4)  →  Const 7 *)
 
 (** Apply one pass of constant folding to expression [e]. *)
 let rec fold_constants (e : expr) : expr =
@@ -59,14 +55,11 @@ let rec fold_constants (e : expr) : expr =
   | Let (x, e1, e2) ->
       Let (x, fold_constants e1, fold_constants e2)
 
-(* ----------------------------------------------------------
-   2. ALGEBRAIC SIMPLIFICATION
+(* 2. ALGEBRAIC SIMPLIFICATION
    Apply mathematical identity and absorption laws.
    e.g.  Add(x, Const 0)  →  x
          Mul(x, Const 1)  →  x
-         Mul(x, Const 0)  →  Const 0
-   ---------------------------------------------------------- *)
-
+         Mul(x, Const 0)  →  Const 0 *)
 (** Apply algebraic simplification to expression [e]. *)
 let rec simplify (e : expr) : expr =
   match e with
@@ -121,12 +114,10 @@ let rec simplify (e : expr) : expr =
   | Let (x, e1, e2) ->
       Let (x, simplify e1, simplify e2)
 
-(* ----------------------------------------------------------
-   3. STRENGTH REDUCTION
+(* 3. STRENGTH REDUCTION
    Replace expensive operations with cheaper equivalents.
    e.g.  x * 2  →  x + x
-         x * 4  →  (x + x) + (x + x)     [when power of 2]
-   ---------------------------------------------------------- *)
+         x * 4  →  (x + x) + (x + x)     [when power of 2] *)
 
 (** Check if n is a power of 2 and return the exponent. *)
 let log2_if_power (n : int) : int option =
@@ -160,11 +151,9 @@ let rec strength_reduce (e : expr) : expr =
   | Let (x,e1,e2)-> Let (x, strength_reduce e1, strength_reduce e2)
   | other        -> other
 
-(* ----------------------------------------------------------
-   4. PIPELINE BUILDER
+(* 4. PIPELINE BUILDER
    First-class transformation rules composed into an optimizer.
-   This is meta-programming: functions that transform programs.
-   ---------------------------------------------------------- *)
+   This is meta-programming: functions that transform programs. *)
 
 (** A transformation is simply a function from expr to expr. *)
 type transform = expr -> expr
@@ -193,11 +182,9 @@ let run_to_fixpoint (pass : transform) (e : expr) : expr =
 (** Full optimizer: run default to a fixed point. *)
 let full_optimize : transform = run_to_fixpoint default_optimizer
 
-(* ----------------------------------------------------------
-   5. CLASSIFICATION OF TRANSFORMATIONS (Research-inspired)
+(* 5. CLASSIFICATION OF TRANSFORMATIONS (Research-inspired)
    Every transformation belongs to a category that describes
-   its purpose and impact.
-   ---------------------------------------------------------- *)
+   its purpose and impact. *)
 
 type transform_class =
   | Optimization      (** Reduces time/space complexity *)

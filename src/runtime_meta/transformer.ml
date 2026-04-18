@@ -1,9 +1,7 @@
-(** ============================================================
-    Runtime Meta-Programming: AST Visualization
-    ============================================================
+(**Runtime Meta-Programming: AST Visualization
     Pretty-prints expression trees in a readable tree format,
     showing ASTs before and after optimization.
-    ============================================================ *)
+    *)
 
 open Dsl
 
