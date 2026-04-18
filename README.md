@@ -3,7 +3,7 @@
 ## Overview
 This project is an academic exploration of **Meta-Programming** within the context of **Functional Programming**, specifically using **OCaml**. It demonstrates how powerful functional techniques like closures and higher-order functions can be combined with runtime meta-programming to build optimized Domain-Specific Languages (DSLs).
 
-## 🚀 Key Features
+## Key Features
 
 ### 1. Core Functional Programming
 Located in `src/core_fp/`, this module implements fundamental FP constructs and patterns:
@@ -25,7 +25,7 @@ Located in `benchmarks/`, the project includes a suite to measure the impact of 
 - **Scale Tests**: Benchmarking large ASTs (e.g., 5,001 nodes) before and after optimization.
 - **Efficiency Metrics**: Demonstrates speedups of over **30,000x** for optimized chains.
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 - **OCaml** (v4.14+)
@@ -39,7 +39,7 @@ opam init
 eval $(opam env)
 ```
 
-## 📖 Usage
+## Usage
 
 The project uses a `Makefile` for easy interaction.
 
@@ -55,7 +55,7 @@ make all
 - **Performance Benchmarks**: `make bench-eval`
 - **Clean Build Artifacts**: `make clean`
 
-## 📁 Project Structure
+## Project Structure
 ```text
 .
 ├── src/
