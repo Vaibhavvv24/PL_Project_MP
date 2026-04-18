@@ -1,22 +1,20 @@
-(** ============================================================
+(**
     Example 1: Core Functional Programming Showcase
-    ============================================================
     Demonstrates every FP construct in core_fp.ml with clear,
     annotated output.
-    ============================================================ *)
+*)
 
 open Core_fp
 
 let separator () = print_endline (String.make 56 '-')
-let section s   = Printf.printf "\n◆ %s\n" s; separator ()
+let section s   = Printf.printf "\n* %s\n" s; separator ()
 
 let () =
   print_endline "";
-  print_endline "╔══════════════════════════════════════════════════════╗";
-  print_endline "║    EXAMPLE: Core Functional Programming in OCaml    ║";
-  print_endline "╚══════════════════════════════════════════════════════╝";
+  print_endline "    EXAMPLE: Core Functional Programming in OCaml    ";
 
-  (* ── 1. First-class functions ────────────────────────── *)
+
+  (* 1. First-class functions *)
   section "1. First-Class Functions";
   let double  = fun x -> x * 2 in
   let square  = fun x -> x * x in
@@ -29,7 +27,7 @@ let () =
   Printf.printf "map over [double, square, add10] for x=4: [%s]\n"
     (String.concat "; " (map string_of_int results));
 
-  (* ── 2. Closures ─────────────────────────────────────── *)
+  (* 2. Closures *)
   section "2. Closures";
   let add5  = make_adder 5 in
   let add10 = make_adder 10 in
@@ -46,7 +44,7 @@ let () =
   Printf.printf "accumulator: +10=%d  +20=%d  +5=%d\n"
     (acc 10) (acc 20) (acc 5);
 
-  (* ── 3. Function Composition ─────────────────────────── *)
+  (* 3. Function Composition *)
   section "3. Function Composition";
   let add3   = make_adder 3 in
   let times2 = make_multiplier 2 in
@@ -59,7 +57,7 @@ let () =
   Printf.printf "string_pipeline \" Hello World \" = %s\n"
     (string_pipeline " Hello World ");
 
-  (* ── 4. Higher-Order Functions ───────────────────────── *)
+  (* 4. Higher-Order Functions *)
   section "4. Higher-Order Functions";
   let nums = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10] in
   let sq_list   = map (fun x -> x * x) nums in
@@ -78,7 +76,7 @@ let () =
     (String.concat "; "
        (map (fun (n,s) -> Printf.sprintf "(%d,%s)" n s) pairs));
 
-  (* ── 5. Dynamic Function Generation ─────────────────── *)
+  (* 5. Dynamic Function Generation *)
   section "5. Dynamic Function Generation";
   let cube   = dynamic_power 3 in
   let fourth = dynamic_power 4 in
@@ -93,4 +91,4 @@ let () =
   Printf.printf "threshold(50) on 75 = %s\n"
     (match cmp 75 with `Above -> "Above" | `Below -> "Below" | `Equal -> "Equal");
 
-  print_endline "\n✓ All core FP examples complete.\n"
+  print_endline "\nAll core FP examples complete.\n"
