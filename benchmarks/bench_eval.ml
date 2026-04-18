@@ -44,16 +44,14 @@ let bar label pct =
 
 let () =
   print_endline "";
-  print_endline "╔══════════════════════════════════════════════════════╗";
-  print_endline "║       BENCHMARK 1: Optimizer Performance             ║";
-  print_endline "╚══════════════════════════════════════════════════════╝";
+  print_endline "BENCHMARK 1: Optimizer Performance";
   print_endline "";
 
   (*TEST 1: Linear chain AST*)
   let chain_size  = 5000 in
   let iterations  = 2000 in
 
-  Printf.printf "▶ Test 1: Linear chain of %d additions\n" chain_size;
+  Printf.printf "Test 1: Linear chain of %d additions\n" chain_size;
   Printf.printf "  Evaluating %d times each.\n\n" iterations;
 
   let chain  = make_chain chain_size in
@@ -81,7 +79,7 @@ let () =
   (*TEST 2: Algebraic simplification*)
   print_endline "";
   print_endline (String.make 56 '-');
-  Printf.printf "▶ Test 2: Algebraic simplification benchmark\n\n";
+  Printf.printf "Test 2: Algebraic simplification benchmark\n\n";
 
   let alg_iters = 50000 in
   (* expression with many zero/identity terms *)
@@ -110,11 +108,10 @@ let () =
 
   (*SUMMARY*)
   print_endline "";
-  print_endline (String.make 56 '=');
+
   print_endline "  BENCHMARK SUMMARY";
-  print_endline (String.make 56 '=');
+  
   Printf.printf "  %-30s  %6.1fx speedup\n" "Constant folding (chain)" speedup1;
   Printf.printf "  %-30s  %6.1fx speedup\n" "Algebraic simplification" speedup2;
-  print_endline (String.make 56 '=');
   print_endline "";
-  print_endline "✓ Benchmark 1 complete.\n"
+  print_endline " Benchmark 1 complete.\n"
