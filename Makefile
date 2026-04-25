@@ -6,16 +6,25 @@ DUNE   = $(EVAL) dune
 build:
 	$(DUNE) build
 
+run-demo: build
+	$(DUNE) exec ./demo/demo.exe
+
 run-core: build
 	$(DUNE) exec ./examples/app_core_fp.exe
 
 run-optimizer: build
 	$(DUNE) exec ./examples/app_optimizer.exe
 
+run-logger: build
+	$(DUNE) exec ./examples/app_logger.exe
+
 bench-eval: build
 	$(DUNE) exec ./benchmarks/bench_eval.exe
 
-all: build run-core run-optimizer bench-eval
+bench-memo: build
+	$(DUNE) exec ./benchmarks/bench_memo.exe
+
+all: build run-demo run-core run-optimizer run-logger bench-eval bench-memo
 
 clean:
 	$(DUNE) clean

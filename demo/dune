@@ -1,0 +1,4 @@
+(executable
+ (name demo)
+ (libraries core_fp runtime_meta)
+ (preprocess (pps ppx_log)))
