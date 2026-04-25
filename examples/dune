@@ -11,3 +11,7 @@
  (libraries core_fp runtime_meta)
  (preprocess (pps ppx_log)))
 
+(executable
+ (name app_codegen)
+ (libraries core_fp runtime_meta))
+
