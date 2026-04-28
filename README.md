@@ -21,15 +21,17 @@ Located in `src/runtime_meta/`, this module features a DSL for arithmetic expres
 - **Pipeline Fixed-Point**: Automatically applies all optimizations until no further changes are possible.
 - **Memoization**: A higher-order meta-transformation that caches function results to avoid redundant computation.
 
-### 3. Compile-Time Meta-Programming (PPX)
-Located in `src/compiletime_meta/`, this module demonstrates OCaml's powerful preprocessing capabilities:
-- **ppx_log**: A custom PPX rewriter that automatically injects entry and exit logs into functions annotated with `[%%log let ...]`.
-- **Instrumentation**: Demonstrates how to transform source code at compile time without manual boilerplate.
+### 4. Offline Staged Compilation (CodeGen)
+Located in `src/runtime_meta/codegen.ml`, this module bridges the gap between interpretation and native execution:
+- **Native Code Generation**: Translates optimized ASTs directly into valid OCaml source code strings.
+- **Free Variable Analysis**: Automatically detects required function arguments from the AST.
+- **Backend Polymorphism**: Demonstrates generating different code variants (e.g., Integer vs. Float) from the same meta-representation.
 
-### 4. Performance Benchmarking
-Located in `benchmarks/`, the project includes a suite to measure the impact of meta-programming optimizations:
+### 5. Performance Benchmarking & Taxonomy
+The project includes a suite to measure and classify the impact of meta-programming:
 - **Optimizer Benchmarks**: Demonstrates speedups of over **30,000x** for optimized expression chains.
 - **Memoization Benchmarks**: Shows exponential to linear complexity reduction (e.g., Fibonacci speedup of **~60,000x**).
+- **Transform Taxonomy**: A formal classification of meta-programs into Optimizing, Structural, and Instrumentation categories.
 
 ## Installation & Setup
 
@@ -59,7 +61,9 @@ make all
 - **Core FP Examples**: `make run-core`
 - **DSL Optimizer Demo**: `make run-optimizer`
 - **PPX Logging Showcase**: `make run-logger`
+- **Offline Staged Compilation**: `make run-codegen`
 - **Performance Benchmarks**: `make bench-eval` or `make bench-memo`
+- **Final Comprehensive Demo**: `make run-demo`
 - **Clean Build Artifacts**: `make clean`
 
 ## Project Structure

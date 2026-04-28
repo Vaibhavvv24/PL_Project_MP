@@ -41,3 +41,37 @@ let to_ocaml_function ?(args=[]) (name : string) (e : expr) : string =
   in
   "let " ^ name ^ " " ^ args_str ^ " =\n" ^
   "  " ^ to_ocaml_expr e
+
+(** ==========================================================
+    FLOAT GENERATION
+    Because our AST is just data, we can choose to compile 
+    it using OCaml's floating-point operators (+., -., *., /.)
+    instead of integers!
+    ========================================================== *)
+
+let rec to_float_ocaml_expr (e : expr) : string =
+  match e with
+  | Const n -> 
+      let fstr = string_of_float (float_of_int n) in
+      if n < 0 then "(" ^ fstr ^ ")" else fstr
+  | Var x -> x
+  | Add (e1, e2) -> "(" ^ to_float_ocaml_expr e1 ^ " +. " ^ to_float_ocaml_expr e2 ^ ")"
+  | Sub (e1, e2) -> "(" ^ to_float_ocaml_expr e1 ^ " -. " ^ to_float_ocaml_expr e2 ^ ")"
+  | Mul (e1, e2) -> "(" ^ to_float_ocaml_expr e1 ^ " *. " ^ to_float_ocaml_expr e2 ^ ")"
+  | Div (e1, e2) -> "(" ^ to_float_ocaml_expr e1 ^ " /. " ^ to_float_ocaml_expr e2 ^ ")"
+  | Neg e1 -> "(-. " ^ to_float_ocaml_expr e1 ^ ")"
+  | Let (x, e1, e2) ->
+      "(let " ^ x ^ " = " ^ to_float_ocaml_expr e1 ^ " in\n  " ^ to_float_ocaml_expr e2 ^ ")"
+
+let to_float_ocaml_function ?(args=[]) (name : string) (e : expr) : string =
+  let final_args =
+    match args with
+    | [] -> List.sort String.compare (free_vars e)
+    | _  -> args
+  in
+  let args_str =
+    if final_args = [] then "()"
+    else String.concat " " final_args
+  in
+  "let " ^ name ^ " " ^ args_str ^ " =\n" ^
+  "  " ^ to_float_ocaml_expr e

@@ -18,6 +18,7 @@ open Runtime_meta.Dsl
 open Runtime_meta.Optimizer
 open Runtime_meta.Memoize
 open Runtime_meta.Transformer
+open Runtime_meta.Codegen
 
 (* ── UI helpers ──────────────────────────────────────────── *)
 let box_line w = String.make w '='
@@ -198,6 +199,25 @@ let () =
   print_endline "  └──────────────────────────┴───────────────┴──────────────────────────────────────┘";
 
   (* ══════════════════════════════════════════════════════
+     STEP 9: OFFLINE STAGED COMPILATION
+     ══════════════════════════════════════════════════════ *)
+  section 9 "Offline Staged Compilation (CodeGen)";
+
+  let codegen_expr =
+    let_ "z" (mul (var "x") (const 2))
+      (mul (add (var "z") (var "y")) (add (mul (const 10) (const 0)) (const 10)))
+  in
+  let opt_codegen_expr = aggressive_optimizer codegen_expr in
+  let generated_code = to_ocaml_function "compute_value" opt_codegen_expr in
+
+  print_endline "  Taking an optimized AST and generating native OCaml code:";
+  Printf.printf "  Optimized AST: %s\n\n" (to_string opt_codegen_expr);
+  print_endline "  Generated Code:";
+  print_endline "  ```ocaml";
+  print_endline generated_code;
+  print_endline "  ```";
+
+  (* ══════════════════════════════════════════════════════
      FINAL SUMMARY
      ══════════════════════════════════════════════════════ *)
   Printf.printf "\n%s\n" (box_line 60);
@@ -212,4 +232,5 @@ let () =
   print_endline "    ✓ PPX compile-time function instrumentation";
   print_endline "    ✓ Memoization (higher-order meta-transformation)";
   print_endline "    ✓ Transform classification taxonomy";
+  print_endline "    ✓ Offline Staged Compilation (CodeGen)";
   Printf.printf "%s\n\n" (box_line 60)
