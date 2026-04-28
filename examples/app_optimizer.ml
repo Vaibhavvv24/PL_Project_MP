@@ -72,7 +72,19 @@ let () =
       (to_string e) (to_string r) note
   ) sr_cases;
 
-  (* 5. Full Optimizer Pipeline *)
+  (* 5. Dead Code Elimination *)
+  section "5. Dead Code Elimination";
+  let unused = let_ "x" (add (const 5) (const 5)) (var "y") in
+  let dce1 = dead_code_elim unused in
+  Printf.printf "Before: %s\n" (to_string unused);
+  Printf.printf "After:  %s  (removed unused x)\n" (to_string dce1);
+
+  let used = let_ "x" (add (const 5) (const 5)) (add (var "x") (var "y")) in
+  let dce2 = dead_code_elim used in
+  Printf.printf "\nBefore: %s\n" (to_string used);
+  Printf.printf "After:  %s  (kept used x)\n" (to_string dce2);
+
+  (* 6. Full Optimizer Pipeline *)
   section "5. Full Optimizer Pipeline";
   let complex =
     add
@@ -87,15 +99,15 @@ let () =
 
   show_optimization_diff "Full Optimizer" complex (full_optimize complex);
 
-  (* 6. AST Visualization *)
-  section "6. AST Tree Visualization";
+  (* 7. AST Visualization *)
+  section "7. AST Tree Visualization";
   let tree_expr = mul (add (var "a") (const 3)) (sub (const 10) (var "b")) in
   Printf.printf "Expression: %s\n\n" (to_string tree_expr);
   Printf.printf "AST Tree:\n";
   print_expr_tree tree_expr;
 
-  (* 7. Partial Evaluation *)
-  section "7. Partial Evaluation";
+  (* 8. Partial Evaluation *)
+  section "8. Partial Evaluation";
   let poly = build_polynomial [1; 2; 3] "x" in  (* 1 + 2x + 3x^2 *)
   Printf.printf "Polynomial (symbolic): %s\n" (to_string poly);
   let env_partial = [("x", 0)] in
@@ -107,8 +119,8 @@ let () =
     (to_string after_full)
     (match after_full with Const n -> n | _ -> eval env_full poly);
 
-  (* 8. Named Transform Registry *)
-  section "8. Transform Classification Registry";
+  (* 9. Named Transform Registry *)
+  section "9. Transform Classification Registry";
   List.iter (fun t ->
     Printf.printf "  [%-23s]  class=%-15s  %s\n"
       t.name

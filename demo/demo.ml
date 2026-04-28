@@ -7,10 +7,13 @@
       1. Core FP foundations
       2. DSL construction
       3. AST before vs. after optimization
-      4. Partial evaluation
-      5. Compile-time PPX instrumentation (live)
-      6. Memoization impact
-      7. Transform classification
+      4. Multi-pass optimizer pipeline
+      5. DCE & Instrumentation Trace
+      6. Partial evaluation
+      7. Compile-time PPX instrumentation (live)
+      8. Memoization impact
+      9. Transform classification
+      10. Offline Staged Compilation (CodeGen)
     ============================================================ *)
 
 open Core_fp
@@ -20,7 +23,7 @@ open Runtime_meta.Memoize
 open Runtime_meta.Transformer
 open Runtime_meta.Codegen
 
-(* ── UI helpers ──────────────────────────────────────────── *)
+(* -- UI helpers -------------------------------------------- *)
 let box_line w = String.make w '='
 let hr  w = print_endline (String.make w '-')
 
@@ -28,29 +31,29 @@ let header title =
   let w = 60 in
   Printf.printf "\n%s\n" (box_line w);
   let pad = (w - String.length title - 2) / 2 in
-  Printf.printf "║%s %s %s║\n"
+  Printf.printf "|%s %s %s|\n"
     (String.make pad ' ') title
     (String.make (w - pad - String.length title - 2) ' ');
   Printf.printf "%s\n\n" (box_line w)
 
 let section n title =
-  Printf.printf "\n┌─[Step %d]─ %s\n" n title;
+  Printf.printf "\n[Step %d] %s\n" n title;
   hr 56
 
-(* ── PPX-instrumented functions ──────────────────────────── *)
+(* -- PPX-instrumented functions ---------------------------- *)
 [%%log let demo_add (a : int) (b : int) = a + b]
 [%%log let demo_square (x : int) = x * x]
 
-(* ── Main Demo ───────────────────────────────────────────── *)
+(* -- Main Demo --------------------------------------------- *)
 let () =
   header "META-PROGRAMMING IN FUNCTIONAL PROGRAMMING";
   print_endline "  Language: OCaml  |  Build: Dune  |  PPX: ppxlib";
   print_endline "  A complete demonstration of runtime + compile-time";
   print_endline "  meta-programming through functional techniques.";
 
-  (* ══════════════════════════════════════════════════════
+  (* ==========================================================
      STEP 1: CORE FP FOUNDATIONS
-     ══════════════════════════════════════════════════════ *)
+     ========================================================== *)
   section 1 "Core Functional Programming";
 
   Printf.printf "  Closure (make_adder 7): %d\n" (make_adder 7 3);
@@ -68,10 +71,10 @@ let () =
   let cube  = dynamic_power 3 in
   Printf.printf "  Dynamic function: cube(5) = %d  (expected 125)\n" (cube 5);
 
-  (* ══════════════════════════════════════════════════════
+  (* ==========================================================
      STEP 2: DSL CONSTRUCTION
-     ══════════════════════════════════════════════════════ *)
-  section 2 "Runtime Meta-Programming — Building DSL Expressions";
+     ========================================================== *)
+  section 2 "Runtime Meta-Programming - Building DSL Expressions";
 
   (* Build expression programmatically: (3 * (x + 5)) - (x * 2) + 10 *)
   let expr =
@@ -86,15 +89,15 @@ let () =
   Printf.printf "  AST size: %d nodes, depth: %d\n" (size expr) (depth expr);
   Printf.printf "  Free variables: [%s]\n" (String.concat ", " (free_vars expr));
 
-  (* ══════════════════════════════════════════════════════
+  (* ==========================================================
      STEP 3: AST BEFORE VS AFTER OPTIMIZATION
-     ══════════════════════════════════════════════════════ *)
-  section 3 "AST Transformation — Before vs After";
+     ========================================================== *)
+  section 3 "AST Transformation - Before vs After";
 
   let opt_expr = full_optimize expr in
   Printf.printf "  Before: %s\n" (to_string expr);
   Printf.printf "  After:  %s\n" (to_string opt_expr);
-  Printf.printf "  Nodes:  %d → %d  (%.0f%% reduction)\n"
+  Printf.printf "  Nodes:  %d -> %d  (%.0f%% reduction)\n"
     (size expr) (size opt_expr)
     ((1.0 -. float_of_int (size opt_expr) /. float_of_int (size expr)) *. 100.0);
   Printf.printf "\n  AST Tree (BEFORE):\n";
@@ -102,9 +105,9 @@ let () =
   Printf.printf "\n  AST Tree (AFTER):\n";
   print_expr_tree opt_expr;
 
-  (* ══════════════════════════════════════════════════════
+  (* ==========================================================
      STEP 4: OPTIMIZATION PASSES SHOWN STEP BY STEP
-     ══════════════════════════════════════════════════════ *)
+     ========================================================== *)
   section 4 "Multi-Pass Optimizer Pipeline";
 
   let passes =
@@ -120,10 +123,23 @@ let () =
     e'
   ) expr passes in
 
-  (* ══════════════════════════════════════════════════════
-     STEP 5: PARTIAL EVALUATION
-     ══════════════════════════════════════════════════════ *)
-  section 5 "Partial Evaluation";
+  (* ==========================================================
+     STEP 5: DEAD CODE ELIMINATION & INSTRUMENTATION
+     ========================================================== *)
+  section 5 "DCE & Instrumentation Trace";
+
+  let unused_let = let_ "x" (add (const 10) (const 20)) (mul (var "y") (const 2)) in
+  Printf.printf "  Before DCE:   %s\n" (to_string unused_let);
+  let dce_result = dead_code_elim unused_let in
+  Printf.printf "  After DCE:    %s  (removed unused x)\n" (to_string dce_result);
+
+  print_endline "\n  Running Instrumentation Trace on optimized expr:";
+  ignore (trace opt_expr);
+
+  (* ==========================================================
+     STEP 6: PARTIAL EVALUATION
+     ========================================================== *)
+  section 6 "Partial Evaluation";
 
   let symbolic = add (mul (var "a") (var "b")) (add (var "a") (const 10)) in
   Printf.printf "  Symbolic:     %s\n" (to_string symbolic);
@@ -133,10 +149,10 @@ let () =
   Printf.printf "  With b=4:     %s\n" (to_string pe2);
   Printf.printf "  Fully eval:   %d  (expected 25)\n" (eval [("a",3);("b",4)] symbolic);
 
-  (* ══════════════════════════════════════════════════════
-     STEP 6: COMPILE-TIME PPX (live demonstration)
-     ══════════════════════════════════════════════════════ *)
-  section 6 "Compile-Time Meta-Programming (PPX)";
+  (* ==========================================================
+     STEP 7: COMPILE-TIME PPX (live demonstration)
+     ========================================================== *)
+  section 7 "Compile-Time Meta-Programming (PPX)";
 
   print_endline "  Source before PPX:";
   print_endline "    [%%log let demo_add (a:int) (b:int) = a + b]";
@@ -156,10 +172,10 @@ let () =
   let r2 = demo_square 7 in
   Printf.printf "  demo_square 7 = %d\n" r2;
 
-  (* ══════════════════════════════════════════════════════
-     STEP 7: MEMOIZATION
-     ══════════════════════════════════════════════════════ *)
-  section 7 "Runtime Meta-Programming — Memoization";
+  (* ==========================================================
+     STEP 8: MEMOIZATION
+     ========================================================== *)
+  section 8 "Runtime Meta-Programming - Memoization";
 
   let call_count = ref 0 in
   let slow_fib x =
@@ -176,32 +192,32 @@ let () =
   let _ = memo_fib 20 in
   let c2 = !call_count in
 
-  Printf.printf "  memoize(slow_fib) 20: first call  → %d underlying calls\n" c1;
-  Printf.printf "  memoize(slow_fib) 20: second call → %d underlying calls\n" c2;
+  Printf.printf "  memoize(slow_fib) 20: first call  -> %d underlying calls\n" c1;
+  Printf.printf "  memoize(slow_fib) 20: second call -> %d underlying calls\n" c2;
   Printf.printf "  Cache HIT proved: second call skips computation entirely.\n";
 
-  (* ══════════════════════════════════════════════════════
-     STEP 8: TRANSFORM CLASSIFICATION
-     ══════════════════════════════════════════════════════ *)
-  section 8 "Meta-Transformation Classification";
+  (* ==========================================================
+     STEP 9: TRANSFORM CLASSIFICATION
+     ========================================================== *)
+  section 9 "Meta-Transformation Classification";
 
-  print_endline "  ┌──────────────────────────┬───────────────┬──────────────────────────────────────┐";
-  print_endline "  │ Transform Name           │ Class         │ Description                          │";
-  print_endline "  ├──────────────────────────┼───────────────┼──────────────────────────────────────┤";
+  print_endline "  +--------------------------+---------------+--------------------------------------+";
+  print_endline "  | Transform Name           | Class         | Description                          |";
+  print_endline "  +--------------------------+---------------+--------------------------------------+";
   List.iter (fun t ->
-    Printf.printf "  │ %-24s │ %-13s │ %-36s │\n"
+    Printf.printf "  | %-24s | %-13s | %-36s |\n"
       t.name
       (class_to_string t.class_)
       (if String.length t.desc > 36
        then String.sub t.desc 0 33 ^ "..."
        else t.desc)
   ) transform_registry;
-  print_endline "  └──────────────────────────┴───────────────┴──────────────────────────────────────┘";
+  print_endline "  +--------------------------+---------------+--------------------------------------+";
 
-  (* ══════════════════════════════════════════════════════
-     STEP 9: OFFLINE STAGED COMPILATION
-     ══════════════════════════════════════════════════════ *)
-  section 9 "Offline Staged Compilation (CodeGen)";
+  (* ==========================================================
+     STEP 10: OFFLINE STAGED COMPILATION
+     ========================================================== *)
+  section 10 "Offline Staged Compilation (CodeGen)";
 
   let codegen_expr =
     let_ "z" (mul (var "x") (const 2))
@@ -217,20 +233,20 @@ let () =
   print_endline generated_code;
   print_endline "  ```";
 
-  (* ══════════════════════════════════════════════════════
+  (* ==========================================================
      FINAL SUMMARY
-     ══════════════════════════════════════════════════════ *)
+     ========================================================== *)
   Printf.printf "\n%s\n" (box_line 60);
   print_endline "  DEMO COMPLETE";
   Printf.printf "%s\n" (box_line 60);
   print_endline "  What was demonstrated:";
-  print_endline "    ✓ First-class functions, closures, HOFs";
-  print_endline "    ✓ DSL AST construction via combinators";
-  print_endline "    ✓ Multi-pass runtime AST optimizer";
-  print_endline "    ✓ AST visualization (tree printer)";
-  print_endline "    ✓ Partial evaluation";
-  print_endline "    ✓ PPX compile-time function instrumentation";
-  print_endline "    ✓ Memoization (higher-order meta-transformation)";
-  print_endline "    ✓ Transform classification taxonomy";
-  print_endline "    ✓ Offline Staged Compilation (CodeGen)";
+  print_endline "    * First-class functions, closures, HOFs";
+  print_endline "    * DSL AST construction via combinators";
+  print_endline "    * Multi-pass runtime AST optimizer";
+  print_endline "    * AST visualization (tree printer)";
+  print_endline "    * Partial evaluation";
+  print_endline "    * PPX compile-time function instrumentation";
+  print_endline "    * Memoization (higher-order meta-transformation)";
+  print_endline "    * Transform classification taxonomy";
+  print_endline "    * Offline Staged Compilation (CodeGen)";
   Printf.printf "%s\n\n" (box_line 60)

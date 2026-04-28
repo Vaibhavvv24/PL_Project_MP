@@ -12,7 +12,7 @@
       1. Constant Folding    — pre-compute constant sub-trees
       2. Algebraic Simplify  — identity/zero laws
       3. Strength Reduction  — replace expensive ops with cheap ones
-      4. Dead Code Elim      — remove unused Let bindings *)
+       *)
 
 open Dsl
 
@@ -151,7 +151,27 @@ let rec strength_reduce (e : expr) : expr =
   | Let (x,e1,e2)-> Let (x, strength_reduce e1, strength_reduce e2)
   | other        -> other
 
-(* 4. PIPELINE BUILDER
+(* 4. DEAD CODE ELIMINATION
+   Remove Let bindings where the variable is never used in the body.
+   e.g. Let("x", Const 5, Var "y") -> Var "y" *)
+
+(** Remove unused Let bindings from expression [e]. *)
+let rec dead_code_elim (e : expr) : expr =
+  match e with
+  | Let (x, e1, e2) ->
+      let e1' = dead_code_elim e1 in
+      let e2' = dead_code_elim e2 in
+      let fv2 = free_vars e2' in
+      if List.mem x fv2 then Let (x, e1', e2')
+      else e2'
+  | Add (e1, e2) -> Add (dead_code_elim e1, dead_code_elim e2)
+  | Sub (e1, e2) -> Sub (dead_code_elim e1, dead_code_elim e2)
+  | Mul (e1, e2) -> Mul (dead_code_elim e1, dead_code_elim e2)
+  | Div (e1, e2) -> Div (dead_code_elim e1, dead_code_elim e2)
+  | Neg e1       -> Neg (dead_code_elim e1)
+  | other        -> other
+
+(* 5. PIPELINE BUILDER
    First-class transformation rules composed into an optimizer.
    This is meta-programming: functions that transform programs. *)
 
@@ -166,9 +186,14 @@ let apply_pipeline (transforms : transform list) (e : expr) : expr =
 let default_optimizer : transform =
   apply_pipeline [fold_constants; simplify]
 
-(** The aggressive optimizer: fold, simplify, reduce, then fold+simplify again. *)
+(** Aggressive optimizer: fold, simplify, reduce, then DCE and repeat. *)
 let aggressive_optimizer : transform =
-  apply_pipeline [fold_constants; simplify; strength_reduce; fold_constants; simplify]
+  apply_pipeline [fold_constants; simplify; strength_reduce; dead_code_elim; fold_constants; simplify]
+
+(** Trace an expression (Instrumentation class) *)
+let trace (e : expr) : expr =
+  Printf.printf "[TRACE] AST size: %d, depth: %d\n" (size e) (depth e);
+  e
 
 (** Run an optimizer repeatedly until the expression stabilizes (fixed point). *)
 let run_to_fixpoint (pass : transform) (e : expr) : expr =
@@ -220,9 +245,19 @@ let transform_registry : named_transform list =
     ; fn     = strength_reduce
     ; desc   = "Replaces expensive ops with cheaper equivalents (x*2 -> x+x)"
     }
+  ; { name   = "dead_code_elim"
+    ; class_ = Optimization
+    ; fn     = dead_code_elim
+    ; desc   = "Removes Let bindings where the variable is never used"
+    }
   ; { name   = "full_optimizer"
     ; class_ = Optimization
     ; fn     = full_optimize
     ; desc   = "Fixed-point composition of all optimization passes"
+    }
+  ; { name   = "ast_trace"
+    ; class_ = Instrumentation
+    ; fn     = trace
+    ; desc   = "Prints AST metrics during transformation"
     }
   ]
