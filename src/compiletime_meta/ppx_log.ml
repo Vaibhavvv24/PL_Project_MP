@@ -9,13 +9,13 @@
 
     EFFECT (what the compiler sees after preprocessing):
       let f x =
-        print_endline "→ [LOG] Entering: f";
+        print_endline "-> [LOG] Entering: f";
         let __result__ = x + 1 in
-        print_endline "← [LOG] Exiting: f";
+        print_endline "<- [LOG] Exiting: f";
         __result__
 
     The transformation happens at ZERO runtime cost for the
-    instrumentation infrastructure — it is baked into the binary.
+    instrumentation infrastructure - it is baked into the binary.
     ============================================================ *)
 
 open Ppxlib
@@ -32,13 +32,13 @@ let make_print_call ~(loc : location) (msg : string) : expression =
 (* ----------------------------------------------------------
    HELPER: Wrap a function body [body_expr] with enter/exit logs.
    The transformation sequence:
-     original body   →   let __result__ = <body> in <exit_log>; __result__
+     original body   ->   let __result__ = <body> in <exit_log>; __result__
    Then wrap with entry log.
    ---------------------------------------------------------- *)
 let instrument_body ~(loc : location) (fn_name : string) (body_expr : expression)
     : expression =
   let open Ast_builder.Default in
-  (* 1. entry log expression: print_endline "→ [LOG] Entering: fn_name" *)
+  (* 1. entry log expression: print_endline "-> [LOG] Entering: fn_name" *)
   let entry_msg  = Printf.sprintf "[LOG] >> Entering: %s" fn_name in
   let entry_log  = make_print_call ~loc entry_msg in
   (* 2. exit log expression *)
