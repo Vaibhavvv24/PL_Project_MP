@@ -43,15 +43,15 @@ let fib_memo : int -> int =
 
 let () =
   print_endline "";
-  print_endline "╔══════════════════════════════════════════════════════╗";
-  print_endline "║       BENCHMARK 2: Memoization Performance           ║";
-  print_endline "╚══════════════════════════════════════════════════════╝";
+  print_endline "========================================================";
+  print_endline "|       BENCHMARK 2: Memoization Performance           |";
+  print_endline "========================================================";
   print_endline "";
 
   (*─────────────────────────────────────────────────────────
     TEST 1: Fibonacci
    ─────────────────────────────────────────────────────────*)
-  Printf.printf "▶ Test 1: Fibonacci comparison\n\n";
+  Printf.printf "> Test 1: Fibonacci comparison\n\n";
 
   let n = 35 in
   call_count := 0;
@@ -80,7 +80,7 @@ let () =
    ─────────────────────────────────────────────────────────*)
   print_endline "";
   print_endline (String.make 56 '-');
-  Printf.printf "▶ Test 2: Repeated queries with memoize utility\n\n";
+  Printf.printf "> Test 2: Repeated queries with memoize utility\n\n";
 
   let expensive_calls = ref 0 in
   let expensive x =
@@ -123,4 +123,4 @@ let () =
   Printf.printf "  %-30s  %6.1fx speedup\n" (Printf.sprintf "fib(%d)" n) speedup;
   Printf.printf "  %-30s  %6.1fx speedup\n" "Repeated queries" speedup2;
   print_endline (String.make 56 '=');
-  print_endline "\n✓ Benchmark 2 complete.\n"
+  print_endline "\n  Benchmark 2 complete.\n"

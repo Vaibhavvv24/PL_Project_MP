@@ -2,7 +2,7 @@
     Runtime Meta-Programming: Memoization & Dynamic Generation
     ============================================================
     Demonstrates runtime meta-programming through:
-      1. Memoization — dynamically wrapping any function with a cache
+      1. Memoization - dynamically wrapping any function with a cache
       2. Dynamic Function Generation — producing specialized functions
          at runtime based on parameters
       3. Transformation Chaining — building pipelines at runtime
