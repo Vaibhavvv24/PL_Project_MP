@@ -1,10 +1,8 @@
-(** ============================================================
-    Example 4: Offline Staged Compilation
-    ============================================================
+(** Example 4: Offline Staged Compilation
     Demonstrates compiling an optimized AST directly into native
     OCaml source code. This entirely bypasses the runtime 
     interpreter (`eval`) for maximum performance.
-    ============================================================ *)
+  *)
 
 open Runtime_meta
 open Runtime_meta.Dsl

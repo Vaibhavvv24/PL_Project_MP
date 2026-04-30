@@ -1,6 +1,5 @@
-(** ============================================================
+(** 
     FINAL DEMO: Meta-Programming in Functional Programming
-    ============================================================
     CLI demo that walks through the entire system end-to-end,
     showing the full meta-programming pipeline:
 
@@ -13,8 +12,7 @@
       7. Compile-time PPX instrumentation (live)
       8. Memoization impact
       9. Transform classification
-      10. Offline Staged Compilation (CodeGen)
-    ============================================================ *)
+      10. Offline Staged Compilation (CodeGen) *)
 
 open Core_fp
 open Runtime_meta.Dsl
@@ -23,7 +21,6 @@ open Runtime_meta.Memoize
 open Runtime_meta.Transformer
 open Runtime_meta.Codegen
 
-(* -- UI helpers -------------------------------------------- *)
 let box_line w = String.make w '='
 let hr  w = print_endline (String.make w '-')
 
@@ -40,20 +37,19 @@ let section n title =
   Printf.printf "\n[Step %d] %s\n" n title;
   hr 56
 
-(* -- PPX-instrumented functions ---------------------------- *)
+
 [%%log let demo_add (a : int) (b : int) = a + b]
 [%%log let demo_square (x : int) = x * x]
 
-(* -- Main Demo --------------------------------------------- *)
 let () =
   header "META-PROGRAMMING IN FUNCTIONAL PROGRAMMING";
   print_endline "  Language: OCaml  |  Build: Dune  |  PPX: ppxlib";
   print_endline "  A complete demonstration of runtime + compile-time";
   print_endline "  meta-programming through functional techniques.";
 
-  (* ==========================================================
+  (* 
      STEP 1: CORE FP FOUNDATIONS
-     ========================================================== *)
+    *)
   section 1 "Core Functional Programming";
 
   Printf.printf "  Closure (make_adder 7): %d\n" (make_adder 7 3);
@@ -71,9 +67,9 @@ let () =
   let cube  = dynamic_power 3 in
   Printf.printf "  Dynamic function: cube(5) = %d  (expected 125)\n" (cube 5);
 
-  (* ==========================================================
+  (* 
      STEP 2: DSL CONSTRUCTION
-     ========================================================== *)
+    *)
   section 2 "Runtime Meta-Programming - Building DSL Expressions";
 
   (* Build expression programmatically: (3 * (x + 5)) - (x * 2) + 10 *)
@@ -89,9 +85,9 @@ let () =
   Printf.printf "  AST size: %d nodes, depth: %d\n" (size expr) (depth expr);
   Printf.printf "  Free variables: [%s]\n" (String.concat ", " (free_vars expr));
 
-  (* ==========================================================
+  (* 
      STEP 3: AST BEFORE VS AFTER OPTIMIZATION
-     ========================================================== *)
+    *)
   section 3 "AST Transformation - Before vs After";
 
   let opt_expr = full_optimize expr in
@@ -105,9 +101,9 @@ let () =
   Printf.printf "\n  AST Tree (AFTER):\n";
   print_expr_tree opt_expr;
 
-  (* ==========================================================
+  (* 
      STEP 4: OPTIMIZATION PASSES SHOWN STEP BY STEP
-     ========================================================== *)
+    *)
   section 4 "Multi-Pass Optimizer Pipeline";
 
   let passes =
@@ -123,9 +119,9 @@ let () =
     e'
   ) expr passes in
 
-  (* ==========================================================
+  (* 
      STEP 5: DEAD CODE ELIMINATION & INSTRUMENTATION
-     ========================================================== *)
+    *)
   section 5 "DCE & Instrumentation Trace";
 
   let unused_let = let_ "x" (add (const 10) (const 20)) (mul (var "y") (const 2)) in
@@ -136,9 +132,9 @@ let () =
   print_endline "\n  Running Instrumentation Trace on optimized expr:";
   ignore (trace opt_expr);
 
-  (* ==========================================================
+  (* 
      STEP 6: PARTIAL EVALUATION
-     ========================================================== *)
+    *)
   section 6 "Partial Evaluation";
 
   let symbolic = add (mul (var "a") (var "b")) (add (var "a") (const 10)) in
@@ -149,9 +145,9 @@ let () =
   Printf.printf "  With b=4:     %s\n" (to_string pe2);
   Printf.printf "  Fully eval:   %d  (expected 25)\n" (eval [("a",3);("b",4)] symbolic);
 
-  (* ==========================================================
+  (* 
      STEP 7: COMPILE-TIME PPX (live demonstration)
-     ========================================================== *)
+    *)
   section 7 "Compile-Time Meta-Programming (PPX)";
 
   print_endline "  Source before PPX:";
@@ -172,9 +168,9 @@ let () =
   let r2 = demo_square 7 in
   Printf.printf "  demo_square 7 = %d\n" r2;
 
-  (* ==========================================================
+  (* 
      STEP 8: MEMOIZATION
-     ========================================================== *)
+    *)
   section 8 "Runtime Meta-Programming - Memoization";
 
   let call_count = ref 0 in
@@ -196,9 +192,9 @@ let () =
   Printf.printf "  memoize(slow_fib) 20: second call -> %d underlying calls\n" c2;
   Printf.printf "  Cache HIT proved: second call skips computation entirely.\n";
 
-  (* ==========================================================
+  (* 
      STEP 9: TRANSFORM CLASSIFICATION
-     ========================================================== *)
+    *)
   section 9 "Meta-Transformation Classification";
 
   print_endline "  +--------------------------+---------------+--------------------------------------+";
@@ -214,9 +210,9 @@ let () =
   ) transform_registry;
   print_endline "  +--------------------------+---------------+--------------------------------------+";
 
-  (* ==========================================================
+  (* 
      STEP 10: OFFLINE STAGED COMPILATION
-     ========================================================== *)
+    *)
   section 10 "Offline Staged Compilation (CodeGen)";
 
   let codegen_expr =
@@ -233,9 +229,9 @@ let () =
   print_endline generated_code;
   print_endline "  ```";
 
-  (* ==========================================================
+  (* 
      FINAL SUMMARY
-     ========================================================== *)
+    *)
   Printf.printf "\n%s\n" (box_line 60);
   print_endline "  DEMO COMPLETE";
   Printf.printf "%s\n" (box_line 60);

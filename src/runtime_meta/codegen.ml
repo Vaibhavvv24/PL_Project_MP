@@ -42,12 +42,12 @@ let to_ocaml_function ?(args=[]) (name : string) (e : expr) : string =
   "let " ^ name ^ " " ^ args_str ^ " =\n" ^
   "  " ^ to_ocaml_expr e
 
-(** ==========================================================
+(** 
     FLOAT GENERATION
     Because our AST is just data, we can choose to compile 
     it using OCaml's floating-point operators (+., -., *., /.)
     instead of integers!
-    ========================================================== *)
+*)  
 
 let rec to_float_ocaml_expr (e : expr) : string =
   match e with
