@@ -72,13 +72,14 @@ let () =
     *)
   section 2 "Runtime Meta-Programming - Building DSL Expressions";
 
-  (* Build expression programmatically: (3 * (x + 5)) - (x * 2) + 10 *)
+  (* Build expression programmatically: (3 * (x + 5)) - (x * 2) + 10+5+x*0 *)
   let expr =
     add
       (sub
          (mul (const 3) (add (var "x") (const 5)))
          (mul (var "x") (const 2)))
-         (add (const 10)  (const 5) )
+        ( add (add (const 10)  (const 5) )
+         (mul (var "x") (const 0)))
 
   in
   Printf.printf "  Constructed DSL expr:\n    %s\n" (to_string expr);

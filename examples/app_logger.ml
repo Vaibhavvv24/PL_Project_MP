@@ -1,16 +1,14 @@
-(** ============================================================
+(**
     Example 3: PPX Logging Showcase
-    ============================================================
     Demonstrates compile-time meta-programming using ppx_log.
 
     The [%%log let f x = ...] extension rewrites the function
     definition at COMPILE TIME to inject entry/exit log calls.
 
     This file shows the effect: running it proves the PPX
-    inserted logging code automatically.
-    ============================================================ *)
+    inserted logging code automatically. *) 
 
-(* ── PPX-transformed function definitions ─────────────────── *)
+(* PPX-transformed function definitions *) 
 (* Each [%%log let ...] is rewritten by ppx_log before compilation *)
 
 [%%log let add_one (x : int) = x + 1]

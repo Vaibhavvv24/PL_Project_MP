@@ -1,22 +1,21 @@
-(** ============================================================
+(**
     Benchmark 2: Memoization Performance Evaluation
-    ============================================================
     Measures the impact of memoization on:
       - Fibonacci (exponential without memo)
       - Polynomial evaluation (repeated queries)
-    Tracks actual call counts to prove caching works.
-    ============================================================ *)
+    Tracks actual call counts to prove caching works.  
+*) 
 
 open Runtime_meta.Memoize
 
-(* ── Timing utility ──────────────────────────────────────── *)
+(* Timing utility *)
 let time_it (f : unit -> 'a) : float * 'a =
   let t0  = Unix.gettimeofday () in
   let res = f () in
   let t1  = Unix.gettimeofday () in
   (t1 -. t0, res)
 
-(* ── Naive recursive Fibonacci (exponential time) ────────── *)
+(* Naive recursive Fibonacci (exponential time) *) 
 let call_count = ref 0
 
 let rec fib_naive (n : int) : int =
@@ -24,7 +23,7 @@ let rec fib_naive (n : int) : int =
   if n <= 1 then n
   else fib_naive (n - 1) + fib_naive (n - 2)
 
-(* ── Memoized Fibonacci ──────────────────────────────────── *)
+(* Memoized Fibonacci *)
 let memo_call_count = ref 0
 
 let fib_memo : int -> int =
@@ -48,9 +47,7 @@ let () =
   print_endline "========================================================";
   print_endline "";
 
-  (*─────────────────────────────────────────────────────────
-    TEST 1: Fibonacci
-   ─────────────────────────────────────────────────────────*)
+  (* TEST 1: Fibonacci *)
   Printf.printf "> Test 1: Fibonacci comparison\n\n";
 
   let n = 35 in
@@ -75,9 +72,7 @@ let () =
   Printf.printf "\n  Speedup:          %.1fx\n" speedup;
   Printf.printf "  Call reduction:   %.2f%% of naive calls needed\n" call_red;
 
-  (*─────────────────────────────────────────────────────────
-    TEST 2: Repeated query memoization
-   ─────────────────────────────────────────────────────────*)
+  (* TEST 2: Repeated query memoization *) 
   print_endline "";
   print_endline (String.make 56 '-');
   Printf.printf "> Test 2: Repeated queries with memoize utility\n\n";
@@ -113,9 +108,7 @@ let () =
   let speedup2 = if t_memo2 > 0.0 then t_raw2 /. t_memo2 else 999.0 in
   Printf.printf "  Speedup:       %.1fx\n" speedup2;
 
-  (*─────────────────────────────────────────────────────────
-    SUMMARY
-   ─────────────────────────────────────────────────────────*)
+  (* SUMMARY *)
   print_endline "";
   print_endline (String.make 56 '=');
   print_endline "  BENCHMARK SUMMARY";

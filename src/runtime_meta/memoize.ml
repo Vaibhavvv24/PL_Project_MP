@@ -1,19 +1,16 @@
-(** ============================================================
-    Runtime Meta-Programming: Memoization & Dynamic Generation
-    ============================================================
+(** 
+    Runtime Meta-Programming: Memoization & Dynamic Generation 
     Demonstrates runtime meta-programming through:
       1. Memoization - dynamically wrapping any function with a cache
       2. Dynamic Function Generation — producing specialized functions
          at runtime based on parameters
-      3. Transformation Chaining — building pipelines at runtime
-    ============================================================ *)
+      3. Transformation Chaining — building pipelines at runtime 
+*) 
 
-(* ----------------------------------------------------------
-   1. MEMOIZATION UTILITY
+(* 1. MEMOIZATION UTILITY
    Takes ANY function and returns a cache-enabled version.
    This is a higher-order meta-transformation: it transforms
-   the *behaviour* of a function without changing its interface.
-   ---------------------------------------------------------- *)
+   the *behaviour* of a function without changing its interface.*)
 
 (** Memoize a single-argument function using a hash table cache.
     The returned function has the same type as [f] but caches results.
@@ -45,10 +42,8 @@ let memoize_counted (f : 'a -> 'b) : ('a -> 'b) * (unit -> int) =
   in
   (wrapped, fun () -> !calls)
 
-(* ----------------------------------------------------------
-   2. DYNAMIC FUNCTION GENERATION
-   Create specialized functions at runtime from parameters.
-   ---------------------------------------------------------- *)
+(* 2. DYNAMIC FUNCTION GENERATION
+   Create specialized functions at runtime from parameters. *) 
 
 (** Generate a linear function: [make_linear a b] returns x -> a*x + b *)
 let make_linear (a : int) (b : int) : int -> int =
@@ -74,10 +69,8 @@ let generate_multiplier (n : int) : int -> int = fun x -> x * n
 let make_bounded (f : int -> int) (lo : int) (hi : int) : int -> int =
   fun x -> max lo (min hi (f x))
 
-(* ----------------------------------------------------------
-   3. TRANSFORMATION CHAINING SYSTEM
-   Build transformation pipelines at runtime from named rules.
-   ---------------------------------------------------------- *)
+(* 3. TRANSFORMATION CHAINING SYSTEM
+   Build transformation pipelines at runtime from named rules. *) 
 
 (** A named, composable transformation step. *)
 type 'a step = { step_name : string; step_fn : 'a -> 'a }

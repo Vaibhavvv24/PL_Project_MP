@@ -1,6 +1,5 @@
-(** ============================================================
-    Compile-Time Meta-Programming: ppx_log
-    ============================================================
+(** 
+    Compile-Time Meta-Programming: ppx_log 
     A PPX (pre-processor extension) that instruments OCaml
     functions at COMPILE TIME by rewriting their AST.
 
@@ -15,26 +14,23 @@
         __result__
 
     The transformation happens at ZERO runtime cost for the
-    instrumentation infrastructure - it is baked into the binary.
-    ============================================================ *)
+    instrumentation infrastructure - it is baked into the binary. 
+*) 
 
 open Ppxlib
 
-(* ----------------------------------------------------------
-   HELPER: Build a [print_endline "msg"] expression at [loc].
-   ---------------------------------------------------------- *)
+(* HELPER: Build a [print_endline "msg"] expression at [loc]. *) 
 let make_print_call ~(loc : location) (msg : string) : expression =
   let open Ast_builder.Default in
   eapply ~loc
     (evar ~loc "print_endline")
     [estring ~loc msg]
 
-(* ----------------------------------------------------------
+(* 
    HELPER: Wrap a function body [body_expr] with enter/exit logs.
    The transformation sequence:
      original body   ->   let __result__ = <body> in <exit_log>; __result__
-   Then wrap with entry log.
-   ---------------------------------------------------------- *)
+   Then wrap with entry log.*)
 let instrument_body ~(loc : location) (fn_name : string) (body_expr : expression)
     : expression =
   let open Ast_builder.Default in
@@ -55,19 +51,12 @@ let instrument_body ~(loc : location) (fn_name : string) (body_expr : expression
   (* 4. prepend entry log: entry_log; body_with_exit *)
   esequence ~loc [entry_log; body_with_exit]
 
-(* ----------------------------------------------------------
-   HELPER: Extract function name from a pattern (best effort).
-   ---------------------------------------------------------- *)
+
 let name_of_pattern (pat : pattern) : string =
   match pat.ppat_desc with
   | Ppat_var { txt; _ } -> txt
   | _                   -> "<anonymous>"
 
-(* ----------------------------------------------------------
-   CORE EXPANSION FUNCTION
-   Called by ppxlib when [%%log ...] is encountered.
-   [payload] is the list of structure items inside the extension.
-   ---------------------------------------------------------- *)
 let expand ~(loc : location) ~path:_ (payload : structure) : structure_item =
   match payload with
   (* Match exactly one [let <rec?> <pattern> = <expr>] binding *)
@@ -93,9 +82,7 @@ let expand ~(loc : location) ~path:_ (payload : structure) : structure_item =
         "[%%%%log] must be applied to a single 'let' binding.\n\
          Example: [%%%%log let f x = x + 1]"
 
-(* ----------------------------------------------------------
-   REGISTER THE EXTENSION WITH ppxlib DRIVER
-   ---------------------------------------------------------- *)
+
 
 let extension =
   Extension.declare

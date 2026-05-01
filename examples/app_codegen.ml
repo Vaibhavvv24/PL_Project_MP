@@ -68,12 +68,10 @@ let () =
   print_endline float_code;
   print_endline "```";
 
-  print_endline "\n============================================================";
   print_endline "  CODEGEN COMPLETE";
-  print_endline "============================================================";
   print_endline "  What was demonstrated:";
   print_endline "    ✓ Taking an in-memory optimized AST.";
   print_endline "    ✓ Extracting free variables for function signature (or () if none).";
   print_endline "    ✓ Generating safe, strict-precedence OCaml source code.";
   print_endline "    ✓ Handling edge cases like negation and division.";
-  print_endline "============================================================\n"
+
